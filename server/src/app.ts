@@ -7,11 +7,11 @@ const app: FastifyInstance = Fastify({
   logger: false,
 })
 
-app.register(routes)
-
 app.register(fastifyWebsocket, {
   options: { maxPayload: 100 },
 })
+
+app.register(routes)
 
 app.listen({ port: +PORT, host: '0.0.0.0' }, (err, address) => {
   if (err) {
