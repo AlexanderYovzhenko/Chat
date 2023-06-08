@@ -1,4 +1,4 @@
-# Chat client
+# Chat Client
 
 ## WebSocket chat client on React and TypeScript
 <br />
