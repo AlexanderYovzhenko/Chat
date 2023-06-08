@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { SocketStream } from '@fastify/websocket'
 import statusCode from './common/statusCode'
+import { app } from './app'
 
 const notFound = async (_: FastifyRequest, reply: FastifyReply) => {
   reply.code(statusCode.NOT_FOUND).send('Page not found - 404')
@@ -10,17 +11,21 @@ const home = async (_: FastifyRequest, reply: FastifyReply) => {
   reply.code(statusCode.OK).send({ Message: 'Server is running!' })
 }
 
-const wsHandler = async (connection: SocketStream, request: FastifyRequest) => {
-  const query = request.query
-  console.log(query)
+const messages: string[] = ['Welcome to chat!']
 
-  // const { user } = query;
+const wsHandler = async (connection: SocketStream, _: FastifyRequest) => {
+  connection.setEncoding('utf8')
+  connection.socket.send(JSON.stringify(messages))
   console.info('Client connected')
 
   connection.socket.on('message', (message: string) => {
-    console.log(message)
+    messages.push(message.toString())
 
-    connection.socket.send('Hello Fastify WebSockets')
+    app.websocketServer.clients.forEach((client) => {
+      if (client.readyState === 1) {
+        client.send(JSON.stringify([message.toString()]))
+      }
+    })
   })
 
   connection.socket.on('close', () => {

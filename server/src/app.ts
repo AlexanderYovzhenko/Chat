@@ -3,13 +3,11 @@ import fastifyWebsocket from '@fastify/websocket'
 import { routes } from './routes'
 import { PORT } from './common/config'
 
-const app: FastifyInstance = Fastify({
+export const app: FastifyInstance = Fastify({
   logger: false,
 })
 
-app.register(fastifyWebsocket, {
-  options: { maxPayload: 100 },
-})
+app.register(fastifyWebsocket, { options: { clientTracking: true } })
 
 app.register(routes)
 
